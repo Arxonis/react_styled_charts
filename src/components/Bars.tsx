@@ -61,6 +61,7 @@ const Bars = ({ data,
     width = (width < 100) ? 100 : width; // Longueur du graphique
     height = (height < 100) ? 100 : height; // Hauteur du graphique
     data = data.filter((_, i) => i < numberShown + initialValue && i >= initialValue); // Valeurs à afficher
+    strokeWidth = (strokeWidth > 10) ? 10 : strokeWidth;
 
     const maxValue = Math.max(...data.filter((_, i) => i < numberShown).map(d => d.value)); // Valeur maximale pour normaliser les barres
     const barWidth = width / Math.min(numberShown, data.length); // Largeur de chaque barre
@@ -73,7 +74,7 @@ const Bars = ({ data,
             {data.filter((_, i) => i < numberShown).map((d, i) => (
                 <motion.rect
                 key={i}
-                x={i * barWidth + effectivePaddingY + paddingXaxis}
+                x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidth}
                 width={barWidth - 2}
                 rx={5}
                 ry={8}
@@ -83,7 +84,7 @@ const Bars = ({ data,
                     fill: "#000000"
                 }}
                 animate={{
-                    y: height - (d.value / maxValue) * height + paddingYaxis,
+                    y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidth / 2,
                     height: (d.value / maxValue) * height,
                     fill: color
                 }}
@@ -102,7 +103,7 @@ const Bars = ({ data,
                 <line
                     x1={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
                     y1={height + paddingYaxis}
-                    x2={width + effectivePaddingY + paddingXaxis}
+                    x2={width + effectivePaddingY + paddingXaxis + strokeWidth}
                     y2={height + paddingYaxis}
                     stroke={strokeColor}
                     strokeWidth={strokeWidth}
@@ -111,7 +112,7 @@ const Bars = ({ data,
             {showYaxis && (
                 <line
                     x1={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
-                    y1={paddingYaxis + strokeWidth / 2}
+                    y1={paddingYaxis}
                     x2={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
                     y2={height + paddingYaxis + strokeWidth / 2}
                     stroke={strokeColor}
