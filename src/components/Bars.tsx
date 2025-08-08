@@ -39,6 +39,7 @@ const Bars = ({ data,
     paddingXaxis = 0,
     paddingYaxis = 0,
     ticksXShown = false,
+    barsSpacing = 2,
     }) => {
     const yLabelRef = useRef<SVGTextElement | null>(null);
     const [yLabelWidth, setYLabelWidth] = useState(0);
@@ -65,6 +66,7 @@ const Bars = ({ data,
 
     const maxValue = Math.max(...data.filter((_, i) => i < numberShown).map(d => d.value)); // Valeur maximale pour normaliser les barres
     const barWidth = width / Math.min(numberShown, data.length); // Largeur de chaque barre
+    barsSpacing = (barsSpacing < 0) ? 0 : (barsSpacing > barWidth ? barWidth - 2 : barsSpacing);
 
     const effectivePaddingY = (yAxisLabelShow ? yLabelWidth : 0); // Espace pour le label de l'axe Y
     const effectivePaddingX = (xAxisLabelShow ? xLabelWidth : 0); // Espace pour le label de l'axe X
@@ -75,9 +77,9 @@ const Bars = ({ data,
                 <motion.rect
                 key={i}
                 x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidth}
-                width={barWidth - 2}
-                rx={5}
-                ry={8}
+                width={barWidth - barsSpacing}
+                rx={(barWidth - barsSpacing) ** 0.5}
+                ry={(barWidth - barsSpacing / 2) ** 0.5}
                 initial={{
                     y: height + paddingYaxis,
                     height: 0,
@@ -145,9 +147,9 @@ const Bars = ({ data,
             {ticksXShown && data.filter((_, i) => i < numberShown).map((d, i) => (
                 <line
                     key={i}
-                    x1={i * barWidth + effectivePaddingY + paddingXaxis + barWidth / 2}
+                    x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
                     y1={height + paddingYaxis}
-                    x2={i * barWidth + effectivePaddingY + paddingXaxis + barWidth / 2}
+                    x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
                     y2={height + paddingYaxis + 5}
                     stroke={strokeColor}
                     strokeWidth={strokeWidth}
