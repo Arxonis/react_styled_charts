@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
  * @param {Object[]} data - The data for the bars (array of objects with `label` and `value`).
  * @param {number} width - Width of the chart in pixels.
  * @param {number} height - Height of the chart in pixels.
- * @param {string} color - Color of the bars.
+ * @param {string} color - Color of the bars ("e.g. #4d5394ff").
  * @param {boolean} showXaxis - Whether to show the X axis line.
  * @param {boolean} showYaxis - Whether to show the Y axis line.
  * @param {number} strokeWidth - Width of axis lines.
@@ -20,6 +20,7 @@ import { motion } from 'framer-motion';
  * @param {string} yAxisLabel - Text for the Y axis label.
  * @param {number} paddingXaxis - Padding on the X axis.
  * @param {number} paddingYaxis - Padding on the Y axis.
+ * @param {boolean} ticksShown - Whether to show ticks on the X axis.
  */
 const Bars = ({ data, 
     width = 500,
@@ -37,7 +38,7 @@ const Bars = ({ data,
     yAxisLabel = "",
     paddingXaxis = 0,
     paddingYaxis = 0,
-    ticksShown = false,
+    ticksXShown = false,
     }) => {
     const yLabelRef = useRef<SVGTextElement | null>(null);
     const [yLabelWidth, setYLabelWidth] = useState(0);
@@ -84,10 +85,10 @@ const Bars = ({ data,
                 animate={{
                     y: height - (d.value / maxValue) * height + paddingYaxis,
                     height: (d.value / maxValue) * height,
-                    fill: "#1e2febff"
+                    fill: color
                 }}
                 transition={{
-                    duration: 1,
+                    duration: 1 * d.value / maxValue,
                     delay: i * 0.1,
                     ease: "easeOut",
                     fill: { duration: 1, delay : 0.15 * i }
@@ -140,7 +141,7 @@ const Bars = ({ data,
                     {yAxisLabel}
                 </text>
             )}
-            {ticksShown && data.filter((_, i) => i < numberShown).map((d, i) => (
+            {ticksXShown && data.filter((_, i) => i < numberShown).map((d, i) => (
                 <line
                     key={i}
                     x1={i * barWidth + effectivePaddingY + paddingXaxis + barWidth / 2}
@@ -157,7 +158,3 @@ const Bars = ({ data,
     }
 
 export default Bars;
-function setAnimateBars(arg0: boolean): void {
-    throw new Error('Function not implemented.');
-}
-
