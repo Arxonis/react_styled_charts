@@ -10,7 +10,7 @@ function darkenColor(hex, percent) {
   r = Math.max(0, Math.min(255, Math.floor(r * (1 - percent))));
   g = Math.max(0, Math.min(255, Math.floor(g * (1 - percent))));
   b = Math.max(0, Math.min(255, Math.floor(b * (1 - percent))));
-  console.log(`Darkened color: rgb(${r}, ${g}, ${b})`);
+  console.log(`Darkened barColor: rgb(${r}, ${g}, ${b})`);
 
   return `rgb(${r},${g},${b})`;
 }
@@ -21,7 +21,7 @@ function darkenColor(hex, percent) {
  * @param {Object[]} data - The data for the bars (array of objects with `label` and `value`).
  * @param {number} width - Width of the chart in pixels.
  * @param {number} height - Height of the chart in pixels.
- * @param {string} color - Color of the bars ("e.g. #4d5394ff").
+ * @param {string} barColor - Color of the bars ("e.g. #4d5394ff").
  * @param {boolean} showXaxis - Whether to show the X axis line.
  * @param {boolean} showYaxis - Whether to show the Y axis line.
  * @param {number} strokeWidth - Width of axis lines.
@@ -41,12 +41,12 @@ function darkenColor(hex, percent) {
 const Bars = ({ data, 
     width = 500,
     height = 300,
-    color = "steelblue",
+    barColor = "steelblue",
     showXaxis = false,
     showYaxis = false,
-    strokeWidth = 1,
-    strokeColor = "black",
-    numberShown = 5,
+    strokeWidthAxe = 1,
+    strokeColorAxe = "black",
+    numberShownColumns = 5,
     initialValue = 0,
     xAxisLabelShow = false,
     yAxisLabelShow = false,
@@ -55,7 +55,7 @@ const Bars = ({ data,
     paddingXaxis = 0,
     paddingYaxis = 0,
     ticksXShown = false,
-    showLabelsTickY = false,
+    showLabelsTickX = false,
     barsSpacing = 2,
     animated = false
     }) => {
@@ -79,34 +79,34 @@ const Bars = ({ data,
 
     width = (width < 100) ? 100 : width; // Longueur du graphique
     height = (height < 100) ? 100 : height; // Hauteur du graphique
-    data = data.filter((_, i) => i < numberShown + initialValue && i >= initialValue); // Valeurs à afficher
-    strokeWidth = (strokeWidth > 10) ? 10 : strokeWidth;
+    data = data.filter((_, i) => i < numberShownColumns + initialValue && i >= initialValue); // Valeurs à afficher
+    strokeWidthAxe = (strokeWidthAxe > 10) ? 10 : strokeWidthAxe;
 
-    const maxValue = Math.max(...data.filter((_, i) => i < numberShown).map(d => d.value)); // Valeur maximale pour normaliser les barres
-    const barWidth = width / Math.min(numberShown, data.length); // Largeur de chaque barre
+    const maxValue = Math.max(...data.filter((_, i) => i < numberShownColumns).map(d => d.value)); // Valeur maximale pour normaliser les barres
+    const barWidth = width / Math.min(numberShownColumns, data.length); // Largeur de chaque barre
     barsSpacing = (barsSpacing < 0) ? 0 : (barsSpacing > barWidth ? barWidth - 2 : barsSpacing);
 
     const effectivePaddingY = (yAxisLabelShow ? yLabelWidth : 0); // Espace pour le label de l'axe Y
     const effectivePaddingX = (xAxisLabelShow ? xLabelWidth : 0); // Espace pour le label de l'axe X
 
     return (
-        <svg width={width + 2 * paddingXaxis + strokeWidth + effectivePaddingY} height={height + 2 * paddingYaxis + strokeWidth + effectivePaddingX}>
-            {data.filter((_, i) => i < numberShown).map((d, i) => (
+        <svg width={width + 2 * paddingXaxis + strokeWidthAxe + effectivePaddingY + barsSpacing} height={height + 2 * paddingYaxis + strokeWidthAxe + effectivePaddingX}>
+            {data.filter((_, i) => i < numberShownColumns).map((d, i) => (
                 <motion.rect
                 key={i}
-                x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidth}
+                x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidthAxe + (barsSpacing)}
                 width={barWidth - barsSpacing}
                 rx={(barWidth - barsSpacing) ** 0.5}
-                ry={(barWidth - barsSpacing / 2) ** 0.5}
+                ry={(barWidth - barsSpacing) ** 0.5}
                 initial={animated ? {
                     y: height + paddingYaxis,
                     height: 0,
-                    fill: darkenColor(color, 0.7)
+                    fill: darkenColor(barColor, 0.7)
                 } : undefined}
                 animate={{
-                    y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidth / 2,
+                    y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidthAxe / 2,
                     height: (d.value / maxValue) * height,
-                    fill: color
+                    fill: barColor
                 }}
                 transition={animated ? {
                     duration: 1 * d.value / maxValue,
@@ -121,31 +121,31 @@ const Bars = ({ data,
             ))}
             {showXaxis && (
                 <line
-                    x1={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
+                    x1={strokeWidthAxe / 2 + effectivePaddingY + paddingXaxis}
                     y1={height + paddingYaxis}
-                    x2={width + effectivePaddingY + paddingXaxis + strokeWidth}
+                    x2={width + effectivePaddingY + paddingXaxis + strokeWidthAxe}
                     y2={height + paddingYaxis}
-                    stroke={strokeColor}
-                    strokeWidth={strokeWidth}
+                    stroke={strokeColorAxe}
+                    strokeWidth={strokeWidthAxe}
                 />
             )}
             {showYaxis && (
                 <line
-                    x1={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
+                    x1={strokeWidthAxe / 2 + effectivePaddingY + paddingXaxis}
                     y1={paddingYaxis}
-                    x2={strokeWidth / 2 + effectivePaddingY + paddingXaxis}
-                    y2={height + paddingYaxis + strokeWidth / 2}
-                    stroke={strokeColor}
-                    strokeWidth={strokeWidth}
+                    x2={strokeWidthAxe / 2 + effectivePaddingY + paddingXaxis}
+                    y2={height + paddingYaxis + strokeWidthAxe / 2}
+                    stroke={strokeColorAxe}
+                    strokeWidth={strokeWidthAxe}
                 />
             )}
             {xAxisLabelShow && (
                 <text
                     ref={xLabelRef}
                     x={width / 2 + paddingXaxis + effectivePaddingY}
-                    y={height + paddingYaxis + 35 + strokeWidth}
+                    y={height + paddingYaxis + 35 + strokeWidthAxe}
                     textAnchor="middle"
-                    fontSize="16"
+                    fontSize={width / 30 < 12 ? 12 : width / 30}
                 >
                     {xAxisLabel}
                 </text>
@@ -157,27 +157,27 @@ const Bars = ({ data,
                     y={paddingXaxis + effectivePaddingX}
                     transform="rotate(-90)"
                     textAnchor="middle"
-                    fontSize="16"
+                    fontSize={width / 30 < 12 ? 12 : width / 30}
                 >
                     {yAxisLabel}
                 </text>
             )}
-            {ticksXShown && data.filter((_, i) => i < numberShown).map((d, i) => (
+            {ticksXShown && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
                 <line
                     key={i}
-                    x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
+                    x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y1={height + paddingYaxis}
-                    x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
+                    x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y2={height + paddingYaxis + 5}
-                    stroke={strokeColor}
-                    strokeWidth={strokeWidth}
+                    stroke={strokeColorAxe}
+                    strokeWidth={strokeWidthAxe}
                 />
             ))}
 
-            {showLabelsTickY && data.filter((_, i) => i < numberShown).map((d, i) => (
+            {showLabelsTickX && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
                 <text
                     key={i}
-                    x={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
+                    x={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y={height + paddingYaxis + 15}
                     textAnchor="middle"
                     fontSize="10"
