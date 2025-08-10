@@ -1,6 +1,20 @@
 import React, { use, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
+function darkenColor(hex, percent) {
+    const num = parseInt(hex.replace("#", ""), 16);
+  let r = (num >> 16);
+  let g = (num >> 8) & 0x00FF;
+  let b = num & 0x0000FF;
+
+  r = Math.max(0, Math.min(255, Math.floor(r * (1 - percent))));
+  g = Math.max(0, Math.min(255, Math.floor(g * (1 - percent))));
+  b = Math.max(0, Math.min(255, Math.floor(b * (1 - percent))));
+  console.log(`Darkened color: rgb(${r}, ${g}, ${b})`);
+
+  return `rgb(${r},${g},${b})`;
+}
+
 /**
  * Bar chart component
  *
@@ -40,6 +54,7 @@ const Bars = ({ data,
     paddingYaxis = 0,
     ticksXShown = false,
     barsSpacing = 2,
+    animated = false
     }) => {
     const yLabelRef = useRef<SVGTextElement | null>(null);
     const [yLabelWidth, setYLabelWidth] = useState(0);
@@ -83,7 +98,7 @@ const Bars = ({ data,
                 initial={{
                     y: height + paddingYaxis,
                     height: 0,
-                    fill: "#000000"
+                    fill: darkenColor(color, 0.7)
                 }}
                 animate={{
                     y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidth / 2,
@@ -94,10 +109,10 @@ const Bars = ({ data,
                     duration: 1 * d.value / maxValue,
                     delay: i * 0.1,
                     ease: "easeOut",
-                    fill: { duration: 1, delay : 0.15 * i }
+                    fill: { duration: 1, delay : 0.05 * i + data.length * 0.075 }
                 }}
                 whileHover={{
-                    fill: "orange"
+                    fill: "rgba(255, 165, 0, 0.8)"
                 }}
                 />
             ))}
