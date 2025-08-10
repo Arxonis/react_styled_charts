@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 function darkenColor(hex, percent) {
@@ -35,7 +35,9 @@ function darkenColor(hex, percent) {
  * @param {number} paddingXaxis - Padding on the X axis.
  * @param {number} paddingYaxis - Padding on the Y axis.
  * @param {boolean} ticksShown - Whether to show ticks on the X axis.
+ * @param {number} barsSpacing - Spacing between bars.
  */
+
 const Bars = ({ data, 
     width = 500,
     height = 300,
@@ -53,6 +55,7 @@ const Bars = ({ data,
     paddingXaxis = 0,
     paddingYaxis = 0,
     ticksXShown = false,
+    showLabelsTickY = false,
     barsSpacing = 2,
     animated = false
     }) => {
@@ -95,24 +98,24 @@ const Bars = ({ data,
                 width={barWidth - barsSpacing}
                 rx={(barWidth - barsSpacing) ** 0.5}
                 ry={(barWidth - barsSpacing / 2) ** 0.5}
-                initial={{
+                initial={animated ? {
                     y: height + paddingYaxis,
                     height: 0,
                     fill: darkenColor(color, 0.7)
-                }}
+                } : undefined}
                 animate={{
                     y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidth / 2,
                     height: (d.value / maxValue) * height,
                     fill: color
                 }}
-                transition={{
+                transition={animated ? {
                     duration: 1 * d.value / maxValue,
                     delay: i * 0.1,
                     ease: "easeOut",
                     fill: { duration: 1, delay : 0.05 * i + data.length * 0.075 }
-                }}
+                } : { duration : 0 }}
                 whileHover={{
-                    fill: "rgba(255, 165, 0, 0.8)"
+                    fill: "orange",
                 }}
                 />
             ))}
@@ -140,9 +143,9 @@ const Bars = ({ data,
                 <text
                     ref={xLabelRef}
                     x={width / 2 + paddingXaxis + effectivePaddingY}
-                    y={height + paddingYaxis + 20 + strokeWidth}
+                    y={height + paddingYaxis + 35 + strokeWidth}
                     textAnchor="middle"
-                    fontSize="12"
+                    fontSize="16"
                 >
                     {xAxisLabel}
                 </text>
@@ -154,7 +157,7 @@ const Bars = ({ data,
                     y={paddingXaxis + effectivePaddingX}
                     transform="rotate(-90)"
                     textAnchor="middle"
-                    fontSize="12"
+                    fontSize="16"
                 >
                     {yAxisLabel}
                 </text>
@@ -169,6 +172,19 @@ const Bars = ({ data,
                     stroke={strokeColor}
                     strokeWidth={strokeWidth}
                 />
+            ))}
+
+            {showLabelsTickY && data.filter((_, i) => i < numberShown).map((d, i) => (
+                <text
+                    key={i}
+                    x={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidth}
+                    y={height + paddingYaxis + 15}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill="#000000ff"
+                >
+                    {d.label}
+                </text>
             ))}
 
         </svg>
