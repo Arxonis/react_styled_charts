@@ -70,6 +70,8 @@ const Bars = ({ data,
 
     const [hasMounted, setHasMounted] = useState(false);
 
+    const [hoveredIndex, setHoveredIndex] = useState(null   );
+
     useEffect(() => {
         if (yAxisLabelShow && yLabelRef.current) {
             setYLabelWidth(yLabelRef.current.getBBox().width);
@@ -77,7 +79,7 @@ const Bars = ({ data,
     }, [yAxisLabelShow, yAxisLabel]);
 
     useEffect(() => {
-    const timer = setTimeout(() => setHasMounted(true), (data.length > numberShownColumns) ? numberShownColumns * 100 : data.length * 0.125);
+    const timer = setTimeout(() => setHasMounted(true), (data.length > numberShownColumns) ? numberShownColumns * 100 : data.length * 125);
     return () => clearTimeout(timer);
     }, []);
 
@@ -152,7 +154,9 @@ const Bars = ({ data,
                 variants={variants}
                 initial={animated ? "initial" : false}
                 animate="rest"
-                whileHover="hover"
+                whileHover={(hasMounted) ? "hover" : undefined}
+                onHoverStart={() => setHoveredIndex(i)}
+                onHoverEnd={() => setHoveredIndex(null)}
                 />
             );
             })}
