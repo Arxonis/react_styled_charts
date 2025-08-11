@@ -1,5 +1,5 @@
 import React, { use, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, easeOut } from 'framer-motion';
 
 function darkenColor(hex, percent) {
     const num = parseInt(hex.replace("#", ""), 16);
@@ -68,11 +68,18 @@ const Bars = ({ data,
     const labelsTickXRefs = useRef<(SVGTextElement | null)[]>([]);
     const [labelsTickXHeight, setLabelsTickXHeight] = useState(0);
 
+    const [hasMounted, setHasMounted] = useState(false);
+
     useEffect(() => {
         if (yAxisLabelShow && yLabelRef.current) {
             setYLabelWidth(yLabelRef.current.getBBox().width);
         }
     }, [yAxisLabelShow, yAxisLabel]);
+
+    useEffect(() => {
+    const timer = setTimeout(() => setHasMounted(true), (data.length > numberShownColumns) ? numberShownColumns * 100 : data.length * 0.125);
+    return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         if (xAxisLabelShow && xLabelRef.current) {
@@ -106,34 +113,50 @@ const Bars = ({ data,
 
     return (
         <svg width={width + 2 * paddingXaxis + strokeWidthAxe + effectivePaddingY + barsSpacing} height={height + 2 * paddingYaxis + strokeWidthAxe + effectivePaddingX}>
-            {data.filter((_, i) => i < numberShownColumns).map((d, i) => (
+            {data.filter((_, i) => i < numberShownColumns).map((d, i) => {
+            const barHeight = (d.value / maxValue) * height;
+            const barY = height - barHeight + paddingYaxis - strokeWidthAxe / 2;
+
+            const variants = {
+                rest: {
+                y: barY,
+                height: barHeight,
+                fill: barColor,
+                transition: {
+                    fill: {
+                        duration: hasMounted ? 0.25 : 1,
+                        delay: hasMounted ? 0 : 0.05 * i + data.length * 0.075,
+                    },
+                    y: { duration: 1 * (d.value / maxValue), delay: i * 0.1, ease: easeOut },
+                    height: { duration: 1 * (d.value / maxValue), delay: i * 0.1, ease: easeOut },
+                    },
+                },
+                hover: {
+                fill: "#000000",
+                transition: { fill: { duration: 0 } },
+                },
+                initial: {
+                y: height + paddingYaxis,
+                height: 0,
+                fill: darkenColor(barColor, 0.7),
+                },
+            };
+
+            return (
                 <motion.rect
                 key={i}
-                x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidthAxe + (barsSpacing)}
+                x={i * barWidth + effectivePaddingY + paddingXaxis + strokeWidthAxe + barsSpacing}
                 width={barWidth - barsSpacing}
                 rx={(barWidth - barsSpacing) ** 0.5}
                 ry={(barWidth - barsSpacing) ** 0.5}
-                initial={animated ? {
-                    y: height + paddingYaxis,
-                    height: 0,
-                    fill: darkenColor(barColor, 0.7)
-                } : undefined}
-                animate={{
-                    y: height - (d.value / maxValue) * height + paddingYaxis - strokeWidthAxe / 2,
-                    height: (d.value / maxValue) * height,
-                    fill: barColor
-                }}
-                transition={animated ? {
-                    duration: 1 * d.value / maxValue,
-                    delay: i * 0.1,
-                    ease: "easeOut",
-                    fill: { duration: 1, delay : 0.05 * i + data.length * 0.075 }
-                } : { duration : 0 }}
-                whileHover={{
-                    fill: "orange",
-                }}
+                variants={variants}
+                initial={animated ? "initial" : false}
+                animate="rest"
+                whileHover="hover"
                 />
-            ))}
+            );
+            })}
+
             {showXaxis && (
                 <line
                     x1={strokeWidthAxe / 2 + effectivePaddingY + paddingXaxis}
@@ -158,7 +181,7 @@ const Bars = ({ data,
                 <text
                     ref={xLabelRef}
                     x={width / 2 + paddingXaxis + effectivePaddingY}
-                    y={height + paddingYaxis + 35 + strokeWidthAxe}
+                    y={height + paddingYaxis + 35 + strokeWidthAxe + labelsTickXHeight}
                     textAnchor="middle"
                     fontSize={width / 30 < 12 ? 12 : width / 30}
                 >
