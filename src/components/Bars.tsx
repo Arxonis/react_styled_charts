@@ -70,7 +70,7 @@ const Bars = ({ data,
 
     const [hasMounted, setHasMounted] = useState(false);
 
-    const [hoveredIndex, setHoveredIndex] = useState(null   );
+    const [hoveredIndex, setHoveredIndex] = useState(null);
 
     useEffect(() => {
         if (yAxisLabelShow && yLabelRef.current) {
@@ -229,6 +229,54 @@ const Bars = ({ data,
                     {d.label}
                 </text>
             ))}
+
+            {hoveredIndex !== null && hasMounted && (() => {
+            const d = data[hoveredIndex];
+            const barWidth = width / Math.min(numberShownColumns, data.length);
+            const barHeight = (d.value / maxValue) * height;
+            const barX = hoveredIndex * barWidth + effectivePaddingY + paddingXaxis + strokeWidthAxe + barsSpacing;
+            const barY = height - barHeight + paddingYaxis - strokeWidthAxe / 2;
+
+            const tooltipWidth = 80;
+            const tooltipHeight = 30;
+            const tooltipX = barX + (barWidth - barsSpacing) / 2 - tooltipWidth / 2;
+            const tooltipY = barY - tooltipHeight - 10;
+
+            return (
+                <g>
+                <rect
+                    x={tooltipX}
+                    y={tooltipY}
+                    width={tooltipWidth}
+                    height={tooltipHeight}
+                    fill="black"
+                    rx={5}
+                    ry={5}
+                    opacity={1}
+                />
+                <rect
+                    x={tooltipX + 0.5}
+                    y={tooltipY + 0.5}
+                    width={tooltipWidth - 1}
+                    height={tooltipHeight - 1}
+                    fill="white"
+                    rx={5}
+                    ry={5}
+                    opacity={1}
+                />
+                <text
+                    x={tooltipX + tooltipWidth / 2}
+                    y={tooltipY + tooltipHeight / 2 + 5}
+                    textAnchor="middle"
+                    fill="black"
+                    fontSize={12}
+                >
+                    {`${d.label}: ${d.value}`}
+                </text>
+                </g>
+            );
+            })()}
+
 
         </svg>
     );
