@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 function darkenColor(hex, percent) {
@@ -65,6 +65,9 @@ const Bars = ({ data,
     const xLabelRef = useRef<SVGTextElement | null>(null);
     const [xLabelWidth, setXLabelWidth] = useState(0);
 
+    const labelsTickXRefs = useRef<(SVGTextElement | null)[]>([]);
+    const [labelsTickXHeight, setLabelsTickXHeight] = useState(0);
+
     useEffect(() => {
         if (yAxisLabelShow && yLabelRef.current) {
             setYLabelWidth(yLabelRef.current.getBBox().width);
@@ -77,6 +80,18 @@ const Bars = ({ data,
         }
     }, [xAxisLabelShow, xAxisLabel]);
 
+    useEffect(() => {
+    if (showLabelsTickX && labelsTickXRefs.current.length > 0) {
+        const heights = labelsTickXRefs.current
+        .filter((el): el is SVGTextElement => el !== null)
+        .map(el => el.getBBox().height);
+        for (const height of heights) {
+            console.log(`Label tick X heightssssss: ${height}`);
+        }
+        setLabelsTickXHeight(Math.max(...heights));
+    }
+    }, [showLabelsTickX, data.length]);
+
     width = (width < 100) ? 100 : width; // Longueur du graphique
     height = (height < 100) ? 100 : height; // Hauteur du graphique
     data = data.filter((_, i) => i < numberShownColumns + initialValue && i >= initialValue); // Valeurs à afficher
@@ -87,7 +102,7 @@ const Bars = ({ data,
     barsSpacing = (barsSpacing < 0) ? 0 : (barsSpacing > barWidth ? barWidth - 2 : barsSpacing);
 
     const effectivePaddingY = (yAxisLabelShow ? yLabelWidth : 0); // Espace pour le label de l'axe Y
-    const effectivePaddingX = (xAxisLabelShow ? xLabelWidth : 0); // Espace pour le label de l'axe X
+    const effectivePaddingX = (xAxisLabelShow ? xLabelWidth : 0) + (showLabelsTickX ? labelsTickXHeight : 0); // Espace pour le label de l'axe X
 
     return (
         <svg width={width + 2 * paddingXaxis + strokeWidthAxe + effectivePaddingY + barsSpacing} height={height + 2 * paddingYaxis + strokeWidthAxe + effectivePaddingX}>
@@ -176,11 +191,12 @@ const Bars = ({ data,
 
             {showLabelsTickX && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
                 <text
+                    ref={el => {labelsTickXRefs.current[i] = el;}}
                     key={i}
                     x={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
-                    y={height + paddingYaxis + 15}
+                    y={height + paddingYaxis + labelsTickXHeight + 5}
                     textAnchor="middle"
-                    fontSize="10"
+                    fontSize={width / (numberShownColumns < data.length ? numberShownColumns : data.length) > 14 ? 14 : width / (numberShownColumns < data.length ? numberShownColumns : data.length)}
                     fill="#000000ff"
                 >
                     {d.label}
