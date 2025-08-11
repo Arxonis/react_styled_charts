@@ -7,9 +7,9 @@ function darkenColor(hex, percent) {
   let g = (num >> 8) & 0x00FF;
   let b = num & 0x0000FF;
 
-  r = Math.max(0, Math.min(255, Math.floor(r * (1 - percent))));
-  g = Math.max(0, Math.min(255, Math.floor(g * (1 - percent))));
-  b = Math.max(0, Math.min(255, Math.floor(b * (1 - percent))));
+  r = 255 - Math.floor(r * percent);
+  g = 255 - Math.floor(g * percent);
+  b = 255 - Math.floor(b * percent);
   console.log(`Darkened barColor: rgb(${r}, ${g}, ${b})`);
 
   return `rgb(${r},${g},${b})`;
@@ -134,13 +134,13 @@ const Bars = ({ data,
                     },
                 },
                 hover: {
-                fill: "#000000",
+                fill: darkenColor(barColor, 0.9),
                 transition: { fill: { duration: 0 } },
                 },
                 initial: {
                 y: height + paddingYaxis,
                 height: 0,
-                fill: darkenColor(barColor, 0.7),
+                fill: darkenColor(barColor, 0.5),
                 },
             };
 
@@ -249,20 +249,12 @@ const Bars = ({ data,
                     y={tooltipY}
                     width={tooltipWidth}
                     height={tooltipHeight}
-                    fill="black"
-                    rx={5}
-                    ry={5}
-                    opacity={1}
-                />
-                <rect
-                    x={tooltipX + 0.5}
-                    y={tooltipY + 0.5}
-                    width={tooltipWidth - 1}
-                    height={tooltipHeight - 1}
                     fill="white"
                     rx={5}
                     ry={5}
                     opacity={1}
+                    stroke="black"
+                    strokeWidth={0.5}
                 />
                 <text
                     x={tooltipX + tooltipWidth / 2}
