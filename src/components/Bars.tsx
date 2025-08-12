@@ -204,9 +204,25 @@ const Bars = ({ data,
                     {yAxisLabel}
                 </text>
             )}
-            {ticksXShown && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
-                <><line
-                    key={i}
+            {ticksXShown && data.filter((_, i) => i < numberShownColumns).map((d, i) => {
+                const variantsTicks = {
+                    initial: {
+                        y2: height + paddingYaxis,
+                        opacity: 0
+                    },
+                    rest: {
+                        y2: (1 - d.value / maxValue) * height + paddingYaxis,
+                        opacity: 1,
+                        transition: {
+                            duration: 1 * (d.value / maxValue),
+                            delay: i * 0.1,
+                            ease: easeOut
+                        }
+                    }
+                };
+                
+                return (<><line
+                    key={`i-line`}
                     x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y1={height + paddingYaxis}
                     x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
@@ -222,8 +238,11 @@ const Bars = ({ data,
                         stroke={"lightgray"}
                         strokeWidth={strokeWidthAxe}
                         strokeDasharray={height / 125}
-                    /></>
-            ))}
+                        variants={variantsTicks}
+                        initial={animated ? "initial" : false}
+                        animate="rest"
+
+                    /></>);})}
 
             {showLabelsTickX && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
                 <text
