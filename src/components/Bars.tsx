@@ -205,15 +205,24 @@ const Bars = ({ data,
                 </text>
             )}
             {ticksXShown && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
-                <line
+                <><line
                     key={i}
                     x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y1={height + paddingYaxis}
                     x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y2={height + paddingYaxis + 5}
                     stroke={strokeColorAxe}
-                    strokeWidth={strokeWidthAxe}
-                />
+                    strokeWidth={strokeWidthAxe} />
+                    <motion.line
+                        key={i}
+                        x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
+                        y1={paddingYaxis}
+                        x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
+                        y2={(1 - d.value / maxValue) * height + paddingYaxis}
+                        stroke={"lightgray"}
+                        strokeWidth={strokeWidthAxe}
+                        strokeDasharray={height / 125}
+                    /></>
             ))}
 
             {showLabelsTickX && data.filter((_, i) => i < numberShownColumns).map((d, i) => (
