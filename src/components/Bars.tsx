@@ -36,6 +36,8 @@ function darkenColor(hex, percent) {
  * @param {number} paddingYaxis - Padding on the Y axis.
  * @param {boolean} ticksShown - Whether to show ticks on the X axis.
  * @param {number} barsSpacing - Spacing between bars.
+ * @param {boolean} showLabelsTickX - Whether to show labels on the X axis ticks.
+ * @param {boolean} animated - Whether to animate the bars.
  */
 
 const Bars = ({ data, 
@@ -235,9 +237,9 @@ const Bars = ({ data,
                         y1={paddingYaxis}
                         x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                         y2={(1 - d.value / maxValue) * height + paddingYaxis}
-                        stroke={"lightgray"}
-                        strokeWidth={height / 125 * width / 300 *  20 / Math.min(data.length, numberShownColumns)}
-                        strokeDasharray={height / 125 * width / 300 *  20 / Math.min(data.length, numberShownColumns)}
+                        stroke={"gray"}
+                        strokeWidth={height / 125 * width / 300 / Math.min(data.length, numberShownColumns)}
+                        strokeDasharray={height / 125}
                         variants={variantsTicks}
                         initial={animated ? "initial" : false}
                         animate="rest"
