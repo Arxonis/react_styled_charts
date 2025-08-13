@@ -222,7 +222,7 @@ const Bars = ({ data,
                 };
                 
                 return (<><line
-                    key={`i-line`}
+                    key={`${i}-line`}
                     x1={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                     y1={height + paddingYaxis}
                     x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
@@ -236,8 +236,8 @@ const Bars = ({ data,
                         x2={i * barWidth + effectivePaddingY + paddingXaxis + (barWidth - barsSpacing) / 2 + strokeWidthAxe + barsSpacing}
                         y2={(1 - d.value / maxValue) * height + paddingYaxis}
                         stroke={"lightgray"}
-                        strokeWidth={strokeWidthAxe}
-                        strokeDasharray={height / 125}
+                        strokeWidth={height / 125 * width / 300 *  20 / Math.min(data.length, numberShownColumns)}
+                        strokeDasharray={height / 125 * width / 300 *  20 / Math.min(data.length, numberShownColumns)}
                         variants={variantsTicks}
                         initial={animated ? "initial" : false}
                         animate="rest"
