@@ -116,7 +116,7 @@ const Bars = ({ data,
     const effectivePaddingX = (xAxisLabelShow ? xLabelWidth : 0) + (showLabelsTickX ? labelsTickXHeight : 0); // Espace pour le label de l'axe X
 
     return (
-        <svg width={width + 2 * paddingXaxis + strokeWidthAxe + effectivePaddingY + barsSpacing} height={height + 2 * paddingYaxis + strokeWidthAxe + effectivePaddingX}>
+        <svg width={width + 2 * paddingXaxis + strokeWidthAxe + effectivePaddingY + barsSpacing + 50} height={height + 2 * paddingYaxis + strokeWidthAxe + effectivePaddingX}>
             {data.filter((_, i) => i < numberShownColumns).map((d, i) => {
             const barHeight = (d.value / maxValue) * height;
             const barY = height - barHeight + paddingYaxis - strokeWidthAxe / 2;
