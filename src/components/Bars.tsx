@@ -2,6 +2,16 @@ import React, { use, useEffect, useRef, useState } from 'react';
 import { motion, easeOut } from 'framer-motion';
 
 function darkenColor(hex, percent) {
+    if (typeof hex !== 'string' || !/^#([0-9A-F]{3}|[0-9A-F]{6})$/i.test(hex)) {
+        const num = parseInt(hex.replace("#", ""), 16);
+        let r2 = (num >> 24);
+        let g2 = (num >> 16) & 0x00FF;
+        let b2 = (num >> 8) & 0x00FF;
+        r2 = 255 - Math.floor(r2 * percent);
+        g2 = 255 - Math.floor(g2 * percent);
+        b2 = 255 - Math.floor(b2 * percent);
+        return `rgb(${r2},${g2},${b2})`;
+    }
     const num = parseInt(hex.replace("#", ""), 16);
   let r = (num >> 16);
   let g = (num >> 8) & 0x00FF;
@@ -44,17 +54,17 @@ const Bars = ({ data,
     width = 500,
     height = 300,
     barColor = "steelblue",
-    showXaxis = false,
-    showYaxis = false,
+    showXaxis = true,
+    showYaxis = true,
     strokeWidthAxe = 1,
     strokeColorAxe = "black",
-    numberShownColumns = 5,
+    numberShownColumns = data.length,
     initialValue = 0,
     xAxisLabelShow = false,
     yAxisLabelShow = false,
     xAxisLabel = "",
     yAxisLabel = "",
-    paddingXaxis = 0,
+    paddingXaxis = 40,
     paddingYaxis = 0,
     ticksXShown = false,
     showLabelsTickX = false,
@@ -167,7 +177,7 @@ const Bars = ({ data,
                 <line
                     x1={strokeWidthAxe / 2 + effectivePaddingY + paddingXaxis}
                     y1={height + paddingYaxis}
-                    x2={width + effectivePaddingY + paddingXaxis + strokeWidthAxe}
+                    x2={width + effectivePaddingY + paddingXaxis + strokeWidthAxe + (barWidth - barsSpacing) / 2}
                     y2={height + paddingYaxis}
                     stroke={strokeColorAxe}
                     strokeWidth={strokeWidthAxe}
@@ -298,8 +308,6 @@ const Bars = ({ data,
                 </g>
             );
             })()}
-
-
         </svg>
     );
     }
